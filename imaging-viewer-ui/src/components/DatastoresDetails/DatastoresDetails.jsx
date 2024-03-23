@@ -61,7 +61,6 @@ export default function DatastoresDetails() {
             ) : (
                 <SpaceBetween size="l">
                     <DatastoreConfiguration datastore={activeDatastore} />
-                    <Tabs tabs={tabs} />
                 </SpaceBetween>
             )}
         </ContentLayout>

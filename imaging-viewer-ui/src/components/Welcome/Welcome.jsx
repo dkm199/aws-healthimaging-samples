@@ -56,7 +56,7 @@ function Welcome() {
     }
 
     return (
-        <ContentLayout header={<Header variant="h2">Jyokti Sample Viewer</Header>}>
+        <ContentLayout header={<Header variant="h2">Jyokti Viewer</Header>}>
             <Container footer={<Footer />}>
                 <Content />
             </Container>
