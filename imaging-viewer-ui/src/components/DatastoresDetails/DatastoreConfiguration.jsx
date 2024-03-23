@@ -66,26 +66,6 @@ export function DatastoreConfiguration({ datastore }) {
                     </Popover>
                     <div>{datastore.datastoreId}</div>
                 </div>
-                <div>
-                    <Box variant="awsui-key-label" display="inline">
-                        ARN
-                    </Box>
-                    <Popover
-                        triggerType="custom"
-                        dismissButton={false}
-                        content={<StatusIndicator type="success">Data store ARN copied to clipboard</StatusIndicator>}
-                    >
-                        <Button
-                            variant="icon"
-                            iconName="copy"
-                            disabled={!datastore.datastoreArn}
-                            onClick={() => {
-                                clipboard.write(datastore.datastoreArn);
-                            }}
-                        />
-                    </Popover>
-                    <div>{datastore.datastoreArn}</div>
-                </div>
             </ColumnLayout>
         );
     }
