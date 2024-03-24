@@ -582,7 +582,7 @@ export default function ImageViewer() {
             <Container>
                 <Metrics />
                 <div>
-                     <button onClick={togglePlay}>{playState ? 'Cine Stop' : 'Cine Start'}</button>
+                     <button onClick={togglePlay} style={{ fontWeight: 'bold' }} >{playState ? 'Pause' : 'Play'}</button>
                  </div>
                 <div>
                 <label htmlFor="fpsInput">Frames Per Second:</label>
