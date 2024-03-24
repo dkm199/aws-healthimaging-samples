@@ -43,7 +43,7 @@ function Welcome() {
                 </Box>
             );
         } else {
-            return <Alert>Log in for full functionality.</Alert>;
+            return <Alert>Log in using the sign in link on the top right</Alert>;
         }
     }
 

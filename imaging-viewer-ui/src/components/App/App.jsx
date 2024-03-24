@@ -180,8 +180,8 @@ export default function App() {
                         <Flashbar items={flashbarItems} />
                     </Box>
                 }
-                breadcrumbs={<BreadcrumbGroup onFollow={onNavigate} items={activeBreadcrumbs} />}
-                navigation={<SideNavigation activeHref={activeHref} onFollow={(e) => onNavigate(e)} items={sideNavItems} />}
+                breadcrumbs={isUserAuth(user) && <BreadcrumbGroup onFollow={onNavigate} items={activeBreadcrumbs} />}
+                navigation={isUserAuth(user) && <SideNavigation activeHref={activeHref} onFollow={(e) => onNavigate(e)} items={sideNavItems} />}
                 content={
                     <Suspense fallback={<SuspenseLoader />}>
                         {isUserAuth(user) ? (
