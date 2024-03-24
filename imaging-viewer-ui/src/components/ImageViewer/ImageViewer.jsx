@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext, useMemo, useCallback, useRef } from 'react';
-import { FaPlay, FaPause } from 'react-icons/fa'; // Importing FontAwesome icons for play and pause
 
 // Context
 import { AppContext } from '../App';
@@ -448,7 +447,6 @@ export default function ImageViewer() {
                     cornerstoneTools.addToolState(elem, 'stack', stack);
                     cornerstoneTools.stackPrefetch.enable(elem);
                     if (stack.frameRate !== undefined) {
-                        cornerstoneTools.stopClip(elem)
                         cornerstoneTools.playClip(elem, stack.frameRate);
                     }
                 })
@@ -472,16 +470,14 @@ export default function ImageViewer() {
     }
 
 
+
     // Cine effect
     useEffect(() => {
         if (playState) {
             playImages()
-        } else {
-            if (imageBoxElement) {
-                cornerstoneTools.stopClip(imageBoxElement)
-            }
         }
         return () => {
+            setPlayState(false); // Reset play state after play completes
         };
 
     }, [playState, framesPerSecond]);
@@ -580,9 +576,9 @@ export default function ImageViewer() {
         >
             <Container>
                 <Metrics />
-                <button onClick={togglePlay}>
-                    {playState ? <FaPause /> : <FaPlay />}
-                </button>
+                <div>
+                     <button onClick={togglePlay}>{playState ? 'Pause' : 'Play'}</button>
+                 </div>
                 <div>
                 <label htmlFor="fpsInput">Frames Per Second:</label>
                 <input
@@ -592,7 +588,6 @@ export default function ImageViewer() {
                     onChange={handleFPSChange}
                     min="1"
                     max="60"
-                    inputMode="numeric"
                 />
             </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
