@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useMemo, useCallback, useRef } from 'react';
-import { FaPlay, FaPause } from 'react-icons/fa';
+
 // Context
 import { AppContext } from '../App';
 
@@ -471,6 +471,7 @@ export default function ImageViewer() {
     }
 
 
+
     // Cine effect
     useEffect(() => {
         if (playState) {
@@ -480,6 +481,7 @@ export default function ImageViewer() {
                 cornerstoneTools.stopClip(imageBoxElement)
             }
         }
+
         return () => {
         };
 
@@ -580,10 +582,8 @@ export default function ImageViewer() {
             <Container>
                 <Metrics />
                 <div>
-                <button onClick={togglePlay}>
-                    {playState ? <FaPause /> : <FaPlay />}
-                </button>
-                </div>
+                     <button onClick={togglePlay}>{playState ? 'Cine Stop' : 'Cine Start'}</button>
+                 </div>
                 <div>
                 <label htmlFor="fpsInput">Frames Per Second:</label>
                 <input
