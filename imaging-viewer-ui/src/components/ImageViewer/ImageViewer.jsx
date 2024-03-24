@@ -83,6 +83,10 @@ export default function ImageViewer() {
     const imageBoxRef = useRef();
     const imageBoxElement = imageBoxRef.current;
 
+    // Cine tool
+    const [playState, setPlayState] = useState(false);
+    const [framesPerSecond, setFramesPerSecond] = useState(10); // Default FPS
+
     // Set crumbs
     useEffect(() => {
         buildCrumb(location.pathname, 'Image Viewer');
@@ -94,6 +98,8 @@ export default function ImageViewer() {
             loadMethod: selectedLoadMethod.value,
         });
     }, [selectedLoadMethod.value]);
+
+
 
     /**
      * When an image is loaded
@@ -288,6 +294,7 @@ export default function ImageViewer() {
         isId = imageSetId,
         seId = selectedSeries?.value,
         md = imageSetMetadata
+
     ) {
         // If any required inputs are empty, return
         if (
@@ -383,6 +390,99 @@ export default function ImageViewer() {
         };
     }, []);
 
+
+
+    const togglePlay = () => {
+        setPlayState((prevState) => !prevState);
+    };
+
+    const handleFPSChange = (e) => {
+        setFramesPerSecond(parseInt(e.target.value) || 0);
+    };
+
+    function playImages(
+        elem = imageBoxElement,
+        dsId = selectedDatastore?.value,
+        isId = imageSetId,
+        seId = selectedSeries?.value,
+        md = imageSetMetadata
+
+    ) {
+        // If any required inputs are empty, return
+        if (
+            ![elem, dsId, isId, seId, md].every((e) => {
+                if (
+                    typeof e === 'undefined' ||
+                    e === null ||
+                    (e.constructor === Object && Object.keys(e).length === 0)
+                ) {
+                    return false;
+                }
+                return true;
+            })
+        ) {
+            return;
+        }
+
+        setImageLoading(true);
+        const imageIds = getSeriesImageIds({
+            datastoreId: dsId,
+            imageSetId: isId,
+            seriesId: seId,
+            metadata: md,
+        });
+
+        if (imageIds.length > 1) {
+            const stack = {
+                currentImageIdIndex: 0,
+                imageIds: imageIds,
+                frameRate: framesPerSecond,
+            };
+            cornerstone
+                .loadAndCacheImage(imageIds[0])
+                .then((image) => {
+                    cornerstone.displayImage(elem, image);
+                    cornerstone.reset(elem);
+                    cornerstoneTools.addStackStateManager(elem, ['stack', 'playClip']);
+                    cornerstoneTools.addToolState(elem, 'stack', stack);
+                    cornerstoneTools.stackPrefetch.enable(elem);
+                    if (stack.frameRate !== undefined) {
+                        cornerstoneTools.playClip(elem, stack.frameRate);
+                    }
+                })
+                .catch((e) => {
+                    addFlashMessage({
+                        header: 'Image Viewer',
+                        content: e.toString(),
+                        type: 'error',
+                    });
+                });
+            cornerstoneTools.setToolActive('StackScroll', { mouseButtonMask: 1 });
+            cornerstoneTools.setToolActive('Zoom', { mouseButtonMask: 4 });
+        } else {
+            cornerstone.loadAndCacheImage(imageIds[0]).then((image) => {
+                cornerstone.displayImage(elem, image);
+                cornerstone.reset(elem);
+            });
+            cornerstoneTools.setToolActive('Zoom', { mouseButtonMask: 1 });
+        }
+        setImageLoading(false);
+    }
+
+
+
+    // Cine effect
+    useEffect(() => {
+        if (playState) {
+            playImages()
+        }
+        return () => {
+            setPlayState(false); // Reset play state after play completes
+        };
+
+    }, [playState, framesPerSecond]);
+
+
     return (
         <ContentLayout
             header={
@@ -409,7 +509,6 @@ export default function ImageViewer() {
                                     options={[
                                         { label: 'Load: Default', value: 'default' },
                                         { label: 'Load: Progressive', value: 'progressive' },
-                                        { label: 'Load: Tile Level Markers', value: 'tlm', disabled: !tlmProxyUrl },
                                     ]}
                                 />
                                 <SelectDatastore
@@ -477,6 +576,20 @@ export default function ImageViewer() {
         >
             <Container>
                 <Metrics />
+                <div>
+                     <button onClick={togglePlay}>{playState ? 'Pause' : 'Play'}</button>
+                 </div>
+                <div>
+                <label htmlFor="fpsInput">Frames Per Second:</label>
+                <input
+                    id="fpsInput"
+                    type="number"
+                    value={framesPerSecond}
+                    onChange={handleFPSChange}
+                    min="1"
+                    max="60"
+                />
+            </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
                     <div
                         ref={imageBoxRef}
